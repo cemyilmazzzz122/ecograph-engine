@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ecograph-engine"
+version = "1.0.0"
+description = "Mathematical and ecological simulation engine for food webs, allometric trophic networks (ATN), and keystone species dynamics."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "GPL-3.0-or-later" }
+authors = [
+    { name = "EcoGraph Development Team" }
+]
+keywords = [
+    "ecology",
+    "food-web",
+    "allometric-trophic-network",
+    "atn",
+    "dynamical-systems",
+    "ode",
+    "trophic-cascade",
+    "keystone-species",
+    "network-science",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+
+[project.optional-dependencies]
+analysis = ["numpy", "scipy", "matplotlib"]
+test = ["pytest>=7.0"]
+
+[project.scripts]
+ecograph = "ecograph.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["ecograph*"]
