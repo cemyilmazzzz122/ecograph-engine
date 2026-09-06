@@ -123,29 +123,48 @@ ecograph dataset kelp -o kelp.json
 ## Theoretical Overview & Mathematical Model
 
 ### 1. Allometric Scaling (Kleiber's Law)
+
 The mass-specific metabolic rate $x_i$ scales inversely with body mass:
 
-$$x_i = a_x \left( \frac{M_i}{M_{ref}} \right)^{-0.25}$$
+$$
+x_i = a_x \left( \frac{M_i}{M_{\text{ref}}} \right)^{-0.25}
+$$
 
 ### 2. Generalized Holling Functional Response
+
 Predation intake rates follow a Hill-type functional response:
 
-$$F_{ij}(\mathbf{B}) = \frac{\omega_{ij} B_j^q}{B_0^q + \sum_{k \in \operatorname{Prey}(i)} \omega_{ik} B_k^q}$$
+$$
+F_{ij}(\mathbf{B}) = \frac{\omega_{ij} B_j^q}{B_0^q + \sum_{k \in \operatorname{Prey}(i)} \omega_{ik} B_k^q}
+$$
 
 where $q = 1.2$ provides empirical ecological persistence by preventing artificial population crashes at low densities.
 
 ### 3. Differential Equations ($dB_i/dt$)
-- **Basal Producers:**
-  $$\frac{dB_i}{dt} = r_i B_i \left( 1 - \frac{B_i}{K_i} \right) - \sum_{j \in \operatorname{Pred}(i)} \frac{x_j y_j B_j F_{ji}}{e_{ji}} + \mathcal{S}_i(\mathbf{B})$$
-- **Consumers:**
-  $$\frac{dB_i}{dt} = -x_i B_i + x_i y_i B_i \sum_{j \in \operatorname{Prey}(i)} F_{ij} - \sum_{k \in \operatorname{Pred}(i)} \frac{x_k y_k B_k F_{ki}}{e_{ki}} + \mathcal{S}_i(\mathbf{B})$$
+
+**Basal Producers ($i \in \mathcal{P}$):**
+
+$$
+\frac{dB_i}{dt} = r_i B_i \left( 1 - \frac{B_i}{K_i} \right) - \sum_{j \in \operatorname{Pred}(i)} \frac{x_j y_j B_j F_{ji}}{e_{ji}} + \mathcal{S}_i(\mathbf{B})
+$$
+
+**Consumers ($i \in \mathcal{C}$):**
+
+$$
+\frac{dB_i}{dt} = -x_i B_i + x_i y_i B_i \sum_{j \in \operatorname{Prey}(i)} F_{ij} - \sum_{k \in \operatorname{Pred}(i)} \frac{x_k y_k B_k F_{ki}}{e_{ki}} + \mathcal{S}_i(\mathbf{B})
+$$
 
 ### 4. Keystone Species Index
-$$\mathcal{R}_i = 1 + 0.6 \log_{10}\left( \frac{100}{\max(P_{base, i}, 1)} \right)$$
 
-$$\mathcal{K}_i = \left( 0.5 \tilde{C}_{B, i} + 0.3 \tilde{C}_{E, i} + 0.2 \tilde{C}_{D, i} \right) \times \mathcal{R}_i$$
+$$
+\mathcal{R}(i) = 1 + 0.6 \log_{10}\left( \frac{100}{\max(P_0(i), 1)} \right)
+$$
 
-For complete mathematical derivations, refer to [SPECIFICATION.md](SPECIFICATION.md).
+$$
+\mathcal{K}(i) = \left( 0.5 \tilde{C}_B(i) + 0.3 \tilde{C}_E(i) + 0.2 \tilde{C}_D(i) \right) \times \mathcal{R}(i)
+$$
+
+For complete mathematical derivations and non-trophic terms, refer to [SPECIFICATION.md](SPECIFICATION.md).
 
 ---
 
