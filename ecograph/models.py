@@ -26,8 +26,21 @@ class Species:
     biomes: List[str] = field(default_factory=list)
     description: str = ""
 
+    def get_metabolic_rate(self, ref_mass_kg: float = 1.0, metabolic_scale: float = 0.314) -> float:
+        """Calculates mass-specific metabolic rate via Kleiber's Law."""
+        if self.trophic_level == "PRODUCER":
+            return 0.0
+        import math
+        mass = self.body_mass_kg if self.body_mass_kg is not None and self.body_mass_kg > 0 else (
+            20.0 ** max(0.0, self.trophic_rank - 2.0)
+        )
+        raw = metabolic_scale * math.pow(max(mass, 1e-6) / max(ref_mass_kg, 1e-6), -0.25)
+        return round(max(0.05, min(0.50, raw)), 4)
+
     def to_dict(self) -> Dict[str, Any]:
-        return asdict(self)
+        data = asdict(self)
+        data["metabolic_rate"] = self.get_metabolic_rate()
+        return data
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> Species:

@@ -17,6 +17,7 @@ from ecograph.centrality import (
     identify_keystones,
 )
 from ecograph.datasets import kelp_forest_marine, yellowstone_trophic_cascade
+from ecograph.enrich import enrich_ecosystem, resolve_species_traits
 from ecograph.linear import simulate_linear
 from ecograph.models import EcosystemGraph, Perturbation
 from ecograph.topology import (
@@ -133,12 +134,55 @@ def cmd_dataset(args: argparse.Namespace) -> None:
         print(g.to_json())
 
 
+def cmd_fetch(args: argparse.Namespace) -> None:
+    print(f"Fetching biological traits for '{args.name}' from online scientific APIs (Wikipedia, Wikidata, GBIF)...")
+    data = resolve_species_traits(args.name)
+    if args.output:
+        with open(args.output, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2)
+        print(f"Traits written to {args.output}")
+    else:
+        print("\n=== Species Biological Profile ===")
+        print(f"Common Name:      {data['common_name']}")
+        print(f"Scientific Name:  {data['scientific_name']}")
+        print(f"Trophic Level:    {data['trophic_level']} (Rank: {data['trophic_rank']})")
+        print(f"Adult Body Mass:  {data['body_mass_kg']} kg")
+        print(f"Metabolic Rate:   {data['metabolic_rate']} (Kleiber's Law)")
+        print(f"IUCN Status:      {data['conservation_status']}")
+        tax = data["taxonomy"]
+        print(f"Taxonomy:         {tax.get('kingdom')} > {tax.get('class')} > {tax.get('family')}")
+        if data.get("description"):
+            print(f"\nDescription:\n{data['description']}")
+
+
+def cmd_enrich(args: argparse.Namespace) -> None:
+    graph = _load_graph(args.input)
+    print(f"Enriching {len(graph.species)} species via online scientific APIs...")
+    enrich_ecosystem(graph)
+    out_path = args.output or args.input
+    with open(out_path, "w", encoding="utf-8") as f:
+        f.write(graph.to_json())
+    print(f"Enriched ecosystem graph written to {out_path}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         prog="ecograph",
         description="EcoGraph: Mathematical and Ecological Simulation Engine",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
+
+    # fetch
+    p_fet = subparsers.add_parser("fetch", help="Fetch biological traits (mass, metabolism, taxonomy) for a species")
+    p_fet.add_argument("name", help="Species common or scientific name (e.g. 'Lion', 'Canis lupus')")
+    p_fet.add_argument("-o", "--output", help="Save traits JSON to file")
+    p_fet.set_defaults(func=cmd_fetch)
+
+    # enrich
+    p_enr = subparsers.add_parser("enrich", help="Enrich an entire ecosystem graph using online scientific APIs")
+    p_enr.add_argument("-i", "--input", required=True, help="Input graph JSON file path")
+    p_enr.add_argument("-o", "--output", help="Output enriched graph JSON file path")
+    p_enr.set_defaults(func=cmd_enrich)
 
     # simulate
     p_sim = subparsers.add_parser("simulate", help="Run ecological simulation (ATN or Linear)")

@@ -57,22 +57,27 @@ pytest
 
 ```python
 from ecograph import (
-    yellowstone_trophic_cascade,
+    fetch_species,
     identify_keystones,
     simulate_atn,
     simulate_linear,
+    yellowstone_trophic_cascade,
     Perturbation,
 )
 
-# 1. Load canonical Yellowstone National Park food web
+# 1. Fetch biological traits for any species via online APIs (Wikipedia, Wikidata, GBIF)
+lion = fetch_species("Lion")
+print(f"{lion.common_name} ({lion.scientific_name}): {lion.body_mass_kg} kg, Metabolic Rate: {lion.get_metabolic_rate()}")
+
+# 2. Load canonical Yellowstone National Park food web
 graph = yellowstone_trophic_cascade()
 
-# 2. Evaluate Keystone Species
+# 3. Evaluate Keystone Species
 keystones = identify_keystones(graph, limit=5)
 for k in keystones:
     print(f"{k.common_name:<25} Keystone Score: {k.score:.4f} (Betweenness: {k.betweenness:.4f})")
 
-# 3. Simulate Trophic Cascade via Continuous ATN (90% Wolf Cull)
+# 4. Simulate Trophic Cascade via Continuous ATN (90% Wolf Cull)
 result = simulate_atn(
     graph=graph,
     perturbations=[Perturbation(species_id="wolf", change_percent=-90.0)],
@@ -107,12 +112,26 @@ ecograph simulate -i @yellowstone -e atn -s "wolf:-50" -o results.json
 ecograph keystone -i @kelp --limit 5
 ```
 
-### 3. Food Web Topology & Trophic Levels
+### 3. Fetch Biological Traits from Scientific APIs
+Automatically resolves taxonomy from GBIF, body mass & IUCN status from Wikidata, and description from Wikipedia:
+```bash
+# Fetch and inspect biological profile for any species (common or scientific name)
+ecograph fetch "Lion"
+ecograph fetch "Enhydra lutris"
+ecograph fetch "Quaking Aspen" -o aspen.json
+```
+
+### 4. Enrich an Entire Food Web Graph
+```bash
+ecograph enrich -i raw_ecosystem.json -o enriched_ecosystem.json
+```
+
+### 5. Food Web Topology & Trophic Levels
 ```bash
 ecograph topology -i @yellowstone
 ```
 
-### 4. Export Benchmark Datasets
+### 6. Export Benchmark Datasets
 ```bash
 ecograph dataset yellowstone -o yellowstone.json
 ecograph dataset kelp -o kelp.json
@@ -135,7 +154,7 @@ $$
 Predation intake rates follow a Hill-type functional response:
 
 $$
-F_{ij}(\mathbf{B}) = \frac{\omega_{ij} B_j^q}{B_0^q + \sum_{k \in \operatorname{Prey}(i)} \omega_{ik} B_k^q}
+F_{ij}(\mathbf{B}) = \frac{\omega_{ij} B_j^q}{B_0^q + \sum_{k \in \mathrm{Prey}(i)} \omega_{ik} B_k^q}
 $$
 
 where $q = 1.2$ provides empirical ecological persistence by preventing artificial population crashes at low densities.
@@ -145,13 +164,13 @@ where $q = 1.2$ provides empirical ecological persistence by preventing artifici
 **Basal Producers ($i \in \mathcal{P}$):**
 
 $$
-\frac{dB_i}{dt} = r_i B_i \left( 1 - \frac{B_i}{K_i} \right) - \sum_{j \in \operatorname{Pred}(i)} \frac{x_j y_j B_j F_{ji}}{e_{ji}} + \mathcal{S}_i(\mathbf{B})
+\frac{dB_i}{dt} = r_i B_i \left( 1 - \frac{B_i}{K_i} \right) - \sum_{j \in \mathrm{Pred}(i)} \frac{x_j y_j B_j F_{ji}}{e_{ji}} + \mathcal{S}_i(\mathbf{B})
 $$
 
 **Consumers ($i \in \mathcal{C}$):**
 
 $$
-\frac{dB_i}{dt} = -x_i B_i + x_i y_i B_i \sum_{j \in \operatorname{Prey}(i)} F_{ij} - \sum_{k \in \operatorname{Pred}(i)} \frac{x_k y_k B_k F_{ki}}{e_{ki}} + \mathcal{S}_i(\mathbf{B})
+\frac{dB_i}{dt} = -x_i B_i + x_i y_i B_i \sum_{j \in \mathrm{Prey}(i)} F_{ij} - \sum_{k \in \mathrm{Pred}(i)} \frac{x_k y_k B_k F_{ki}}{e_{ki}} + \mathcal{S}_i(\mathbf{B})
 $$
 
 ### 4. Keystone Species Index

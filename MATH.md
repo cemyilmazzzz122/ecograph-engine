@@ -68,7 +68,7 @@ where $\sigma_{st}$ is the total number of shortest paths between $s$ and $t$, a
 The engine implements **Brandes' (2001) algorithm**, running in $\mathcal{O}(|\mathcal{V}| \cdot |\mathcal{E}|)$ time and $\mathcal{O}(|\mathcal{V}| + |\mathcal{E}|)$ space by accumulating pair dependencies:
 
 $$
-\delta_{s \bullet}(v) = \sum_{w: v \in \operatorname{Pred}(s, w)} \frac{\sigma_{sv}}{\sigma_{sw}} \left( 1 + \delta_{s \bullet}(w) \right)
+\delta_{s \bullet}(v) = \sum_{w: v \in \mathrm{Pred}(s, w)} \frac{\sigma_{sv}}{\sigma_{sw}} \left( 1 + \delta_{s \bullet}(w) \right)
 $$
 
 For undirected graphs where $n = |\mathcal{V}| > 2$, betweenness is normalized to the unit interval $[0, 1]$:
@@ -100,7 +100,7 @@ $$
 ### 3.4. Degree Centrality
 
 $$
-C_D(v) = \operatorname{deg}_{\text{in}}(v) + \operatorname{deg}_{\text{out}}(v)
+C_D(v) = \mathrm{deg}_{\text{in}}(v) + \mathrm{deg}_{\text{out}}(v)
 $$
 
 ### 3.5. Keystone Species Index
@@ -148,7 +148,7 @@ Ecological impacts are fundamentally asymmetric across trophic interactions:
 Let $\Delta_i^{(t)}$ denote the percentage change of species $i$ at iteration step $t$. For pinned scenario perturbation inputs, $\Delta_i^{(t)} = \Delta_{\text{pinned}, i}$. For all unpinned species:
 
 $$
-\operatorname{RawImpact}_i^{(t+1)} = \sum_{e = (j, i) \text{ or } (i, j) \in \mathcal{E}} \delta_{j \to i}\left(\Delta_j^{(t)}, w_e, \tau_e\right)
+\mathrm{RawImpact}_i^{(t+1)} = \sum_{e = (j, i) \text{ or } (i, j) \in \mathcal{E}} \delta_{j \to i}\left(\Delta_j^{(t)}, w_e, \tau_e\right)
 $$
 
 where the directional contribution function $\delta_{j \to i}$ is formulated as:
@@ -176,7 +176,7 @@ $$
 $$
 
 $$
-\Delta_i^{(t+1)} = \operatorname{clamp}\left( \operatorname{RawImpact}_i^{(t+1)} \cdot \mathcal{D}_i, \; -100\%, \; +300\% \right)
+\Delta_i^{(t+1)} = \mathrm{clamp}\left( \mathrm{RawImpact}_i^{(t+1)} \cdot \mathcal{D}_i, \; -100\%, \; +300\% \right)
 $$
 
 A species experiencing $\Delta_i \le -70\%$ is classified as structurally collapsed.
@@ -205,10 +205,10 @@ $$
 x_i \in [x_{\min}, x_{\max}] = [0.05, 0.50]
 $$
 
-When empirical body mass data is unavailable, mass is estimated from trophic rank $\operatorname{Rank}_i \ge 1$ and class baselines:
+When empirical body mass data is unavailable, mass is estimated from trophic rank $\mathrm{Rank}_i \ge 1$ and class baselines:
 
 $$
-M_i = M_{\text{base}} \cdot 20^{\max(0, \operatorname{Rank}_i - 2)}
+M_i = M_{\text{base}} \cdot 20^{\max(0, \mathrm{Rank}_i - 2)}
 $$
 
 ### 5.2. Generalized Holling Functional Response
@@ -216,7 +216,7 @@ $$
 Predation intake rates saturate due to prey handling and search times. The consumption rate $F_{ij}$ of prey $j$ by predator $i$ is governed by a generalized Hill-type functional response transitioning between Holling Type II and Type III:
 
 $$
-F_{ij}(\mathbf{B}) = \frac{\omega_{ij} B_j^q}{B_0^q + \sum_{k \in \operatorname{Prey}(i)} \omega_{ik} B_k^q}
+F_{ij}(\mathbf{B}) = \frac{\omega_{ij} B_j^q}{B_0^q + \sum_{k \in \mathrm{Prey}(i)} \omega_{ik} B_k^q}
 $$
 
 where:
@@ -225,7 +225,7 @@ where:
 * $\omega_{ij}$: Normalized dietary preference weight satisfying:
 
 $$
-\sum_{k \in \operatorname{Prey}(i)} \omega_{ik} = 1.0, \quad \omega_{ij} = \frac{w_{ij}}{\sum_k w_{ik}}
+\sum_{k \in \mathrm{Prey}(i)} \omega_{ik} = 1.0, \quad \omega_{ij} = \frac{w_{ij}}{\sum_k w_{ik}}
 $$
 
 ### 5.3. Coupled Ordinary Differential Equations ($dB_i/dt$)
@@ -235,7 +235,7 @@ The temporal trajectory of biomass density $B_i(t)$ is governed by:
 #### 1. Basal Primary Producers ($i \in \mathcal{P}$):
 
 $$
-\frac{dB_i}{dt} = r_i B_i \left( 1 - \frac{B_i}{K_i} \right) - \sum_{j \in \operatorname{Pred}(i)} \frac{x_j y_j B_j F_{ji}}{e_{ji}} + \mathcal{S}_i(\mathbf{B})
+\frac{dB_i}{dt} = r_i B_i \left( 1 - \frac{B_i}{K_i} \right) - \sum_{j \in \mathrm{Pred}(i)} \frac{x_j y_j B_j F_{ji}}{e_{ji}} + \mathcal{S}_i(\mathbf{B})
 $$
 
 where:
@@ -248,7 +248,7 @@ where:
 #### 2. Consumers ($i \in \mathcal{C}$):
 
 $$
-\frac{dB_i}{dt} = -x_i B_i + x_i y_i B_i \sum_{j \in \operatorname{Prey}(i)} F_{ij} - \sum_{k \in \operatorname{Pred}(i)} \frac{x_k y_k B_k F_{ki}}{e_{ki}} + \mathcal{S}_i(\mathbf{B})
+\frac{dB_i}{dt} = -x_i B_i + x_i y_i B_i \sum_{j \in \mathrm{Prey}(i)} F_{ij} - \sum_{k \in \mathrm{Pred}(i)} \frac{x_k y_k B_k F_{ki}}{e_{ki}} + \mathcal{S}_i(\mathbf{B})
 $$
 
 where $-x_i B_i$ represents metabolic maintenance loss, and the second term accounts for biomass accretion across all prey species.
@@ -348,7 +348,7 @@ Empirical food web matrices are rarely at mathematical equilibrium when initiali
 The system is initialized with $B_i(0) = 1.0$ for primary producers and $B_i(0) = 0.5$ for consumers. It is integrated forward in time without external shocks for up to $T_{\text{burn}} = 8000$ until the maximum relative population drift satisfies:
 
 $$
-\operatorname{Drift}(\mathbf{B}) = \max_{i : B_i > 10^{-6}} \frac{|\dot{B}_i|}{B_i} < 10^{-4}
+\mathrm{Drift}(\mathbf{B}) = \max_{i : B_i > 10^{-6}} \frac{|\dot{B}_i|}{B_i} < 10^{-4}
 $$
 
 The resulting state $\mathbf{B}^*$ forms the **true dynamic baseline**. The proportion of surviving species defines network persistence:
@@ -379,7 +379,7 @@ $$
 In food webs with omnivory and cannibalism, trophic levels are non-integer values. Trophic positions $TP(i)$ are defined as:
 
 $$
-TP(i) = 1 + \sum_{j \in \operatorname{Prey}(i)} \left( \frac{w_{ij}}{\sum_k w_{ik}} \right) TP(j)
+TP(i) = 1 + \sum_{j \in \mathrm{Prey}(i)} \left( \frac{w_{ij}}{\sum_k w_{ik}} \right) TP(j)
 $$
 
 where primary producers without prey have $TP(i) = 1.0$.
@@ -405,11 +405,11 @@ Following Lindeman (1942), ecological efficiency $\eta_{ij}$ dictates that only 
 For a food chain path $P = (s_1 \to s_2 \to \dots \to s_m)$ where $s_m \in \mathcal{P}$:
 
 $$
-\operatorname{DietWeight}(P) = \prod_{k=1}^{m-1} \omega_{s_k, s_{k+1}}
+\mathrm{DietWeight}(P) = \prod_{k=1}^{m-1} \omega_{s_k, s_{k+1}}
 $$
 
 $$
-\operatorname{EnergyReaching}(P) = \prod_{k=1}^{m-1} \eta_{s_{k+1}}
+\mathrm{EnergyReaching}(P) = \prod_{k=1}^{m-1} \eta_{s_{k+1}}
 $$
 
 To prevent combinatorial explosion in dense webs, the path search terminates once an exploration budget of $120,000$ traversed nodes is reached.

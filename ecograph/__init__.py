@@ -14,6 +14,13 @@ from ecograph.centrality import (
     identify_keystones,
 )
 from ecograph.datasets import kelp_forest_marine, yellowstone_trophic_cascade
+from ecograph.enrich import (
+    calculate_kleiber_metabolic_rate,
+    enrich_ecosystem,
+    enrich_species,
+    fetch_species,
+    resolve_species_traits,
+)
 from ecograph.linear import simulate_linear
 from ecograph.models import (
     AtnParameters,
@@ -59,4 +66,9 @@ __all__ = [
     "ecosystem_summary",
     "yellowstone_trophic_cascade",
     "kelp_forest_marine",
+    "resolve_species_traits",
+    "fetch_species",
+    "enrich_species",
+    "enrich_ecosystem",
+    "calculate_kleiber_metabolic_rate",
 ]
