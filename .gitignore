@@ -1,5 +1,6 @@
 # Self-ignoring rule as requested
 .gitignore
+CLAUDE.md
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
